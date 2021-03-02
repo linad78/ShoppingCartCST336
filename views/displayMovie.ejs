@@ -1,0 +1,24 @@
+<%- include('partials/header.ejs') %>
+
+<div align="center">
+    <div class="jumbotron">
+        <h2 style="padding-top: 5px">Search Movies:</h2>
+        <form action="/viewMovies" id="searchForm" style="padding-top: 40px">
+
+            <input type="submit" name="search" class="btn btn-info" id="search" value="Search"
+                style="margin-top: 30px"><br>
+    </div>
+    </form>
+    <div align="center">
+        <div class="jumbotron">
+            <h2 style="padding-top: 5px"> View Movies:</h2>
+            <form action="/viewMovies">
+
+                <button id="viewAllMovies" class="btn btn-outline-secondary btn-sm"
+                    style="margin-top: 10px; margin-bottom: 5px">view all Movies</button>
+            </form>
+        </div>
+
+
+
+        <%- include('partials/footer.ejs') %>

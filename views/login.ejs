@@ -1,0 +1,19 @@
+<%- include('partials/header.ejs') %>
+
+<div class="container" style="background-color:#2da9d2; width:30%">
+    <form class="text-center col-md-12" style="padding-top: 75px; padding-bottom: 75px" method="POST">
+        Username: <input type="text" name="username"><br><br>
+        Password: <input type="password" name="password"><br><br>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out to save your login info </label>
+        </div>
+        <button>Login</button>
+    </form>
+
+    <% if (typeof loginError != 'undefined' && loginError) { %>
+    <h2 class='error'> Wrong username and password please try again!</h2>
+    <% }%>
+</div>
+
+<%- include('partials/footer.ejs') %>

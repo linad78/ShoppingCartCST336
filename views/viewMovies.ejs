@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Movies</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <h1>View all Movies </h1>
+    <h2>Update and Delete Movies</h2>
+    <% movies.forEach(function(movie){ %>
+    [<a href="/viewMovies?idmovie=<%=movie.idmovie%>">View</a>]
+    [<a href="/deleteMovie?idmovie=<%=movie.idmovie%>" id="<%=movie.idmovie%>">Delete</a>]
+    [<a href="/addMovie?title=<%=movie.title%>&producer=<%=movie.producer%>&rating=<%=movie.rating%>"
+        id="<%=movie.idmovie%>">Add</a>]
+    <span>
+        <%=movie.title%>
+        <%=movie.producer%>
+        <%=movie.rating%>
+        <br />
+        <%- JSON.stringify(movie) %>
+        <hr />
+    </span>
+    <br>
+    <%})%>
+
+    <script>
+        //add an event listener to ask before delete Movie
+        $(".deleteMovie").on("click", confirmDeleteMovie);
+        //implement the event listener function 
+        function confirmDeleteMovie() {
+            //test the event listener by using console.log or alert
+            //confirm gives two buttons one to cancel and one to ok 
+            let deleteMovie = confirm("Delete Movie?" +
+                $(this).next().html() + "?");//next/html to access name
+
+            if (deleteMovie) {
+                // use this to avoid hardcode the value it retrive the value assigned to the element we are interacting with 
+                let idmovie = $(this).attr("id");
+                //if true delete movie
+
+                //winsow location takes us to the webpage
+
+                window.location.href = "/deletemovie?idmovie=" + idmovie;
+            }
+        }
+    </script>
+</body>
+
+</html>

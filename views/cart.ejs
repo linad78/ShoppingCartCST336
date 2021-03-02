@@ -1,0 +1,111 @@
+<%- include('partials/header.ejs') %>
+
+<div align="center">
+    <div class="jumbotron">
+        <h1>My Shopping Cart</h1>
+    </div>
+    <div id="cartContainer" style="block">
+        <table id="cart" class="table" style="margin: 0 auto; width: 50%">
+            <thead class="thead-light">
+                <tr class="row">
+                    <th class="col-4 align-middle">Movie</th>
+                    <th class="col-1 align-middle">Qty</th>
+                    <th class="col-2 align-middle"></th>
+                    <th class="col-2 align-middle"></th>
+                </tr>
+            </thead>
+            <tbody id="cartBody"></tbody>
+        </table><br>
+        <strong><span style="padding: 5px">Total: </span><span id="priceTotal"></span></strong>
+    </div>
+
+    <script>
+
+        $(function () {
+            if (localStorage.cart) {
+                cart = JSON.parse(localStorage.cart);
+            }
+        });
+
+        // Set up cart table 
+        $(document).ready(function () {
+            displayCart()
+        })
+
+        // Update cart on click event
+        $(document).on("click", "button.updateCart", function () {
+
+            // Save text from the row into variables
+            var title = $(this).parent().prev().prev().prev().prev().prev().prev().text();
+            var bQty = $(this).parent().prev().children().val();
+            var bPrice = $(this).parent().prev().prev().prev().text();
+
+            // Check if input is a number
+            if (isNaN(bQty)) {
+                alert("Please input a valid number!");
+                return false;
+            }
+
+            // Check if input is interger
+            if (bQty < 1 || bQty % 1 != 0) {
+                alert("Please enter a valid number!");
+                return false;
+            }
+
+            // Check if Movie is already in localStorage and update Qty
+            for (var i in cart) {
+                if (cart[i].Movie == bTitle) {
+                    cart[i].Qty = bQty;  // replace existing Qty
+                    saveCart(); // save to local storage
+                    displayCart()
+                    return;
+                }
+            }
+        });
+
+        // Remove  movie from cart on click
+        $(document).on("click", "button.removeFromCart", function () {
+            var index = $(this).attr("id"); // get row index from buttom
+            cart.splice(index, 1); // delete item at index
+            displayCart(); // re-display table
+            saveCart(); // save changes in local storage
+        });
+
+        // Save changes to cart to local storage
+        function saveCart() {
+            if (window.localStorage) {
+                localStorage.cart = JSON.stringify(cart);
+            }
+        }
+
+        // Pull data from local storage and display into table
+        function displayCart() {
+            if (cart.length == 0) {
+                $("#cartContainer").css("display", "none");
+                $("#noItems").removeClass("invisible");
+                $("#noItems").addClass("visible");
+                return;
+            }
+
+            $("#noItems").removeClass("visible");
+            $("#noItems").addClass("invisible");
+
+            var total = 0;
+
+            $("#cartBody").empty();  // empty body of table 
+            for (var i in cart) {
+                var item = cart[i];
+                var row = "<tr class='row'><td class='col-4 align-middle'>" + item.Movie + "</td><td class='col align-middle'>" + item.Rating + "</td><td class='col align-middle'>" + item.Qty +
+                    "</td><td class='col align-middle'><span>$</span>" + item.Price + "</td><td class='col align-middle'><span>$</span>" + (item.Qty * item.Price).toFixed(2) +
+                    "</td><td class='col-2 align-middle'><input type='text' class='updateAmount' name='Update' placeholder='Update Amount:'></td><td class='col align-middle'><button class='updateCart btn btn-outline-info' onclick='updateCart()'>Update</button></td><td class='col align-middle'><button id='" + i +
+                    "' class='removeFromCart btn btn-outline-danger'>Remove</button></td></tr>";
+                $("#cartBody").append(row);
+                total = total + (item.Price * item.Qty);
+            }
+
+            $("#priceTotal").html("$" + total.toFixed(2));
+        }
+
+    </script>
+
+    <%- include('partials/footer.ejs') %>
