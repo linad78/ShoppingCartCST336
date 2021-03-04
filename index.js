@@ -207,7 +207,7 @@ function isAuthenticated(req, res, next) {
   }
 }
 
-const PORT = 3001;
+const PORT = process.env.Port ||3001;
 app.listen(PORT, () => {
   // Creating connection
   conn = createDBConnection();
@@ -217,10 +217,10 @@ app.listen(PORT, () => {
   console.log('Express server is running');
 });
 
+// let port =process.env.PORT || 3001;
 
+// // //Heroku Listener
+// app.listen(port,()=>{
+//     console.log(`Express Server is Running...${port}`);
 
-//Heroku Listener
-app.listen(process.env.PORT,function(){
-    console.log("Express Server is Running...");
-
-});
+// });
