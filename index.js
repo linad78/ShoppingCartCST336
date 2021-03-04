@@ -97,7 +97,7 @@ app.get("/addMovie", isAuthenticated, function (req, res) {
 
   var sql = "INSERT INTO movie (title, producer, rating) values (?,?,?)";
 
-  // TODO: Not sure why parseInt is being used
+  
   // var title = parseFloat(req.query.title);
   // var producer = parseInt(req.query.producer);
   // var rating = parseInt(req.query.rating);
@@ -199,13 +199,13 @@ function checkPassword(password, hashedPW) {
   });
 }
 
-// function isAuthenticated(req, res, next) {
-//   if (!req.session.authenticated) {
-//     res.redirect('/');
-//   } else {
-//     next();
-//   }
-// }
+function isAuthenticated(req, res, next) {
+  if (!req.session.authenticated) {
+    res.redirect('/');
+  } else {
+    next();
+  }
+}
 
 const PORT = 3001;
 app.listen(PORT, () => {
@@ -214,5 +214,10 @@ app.listen(PORT, () => {
   conn.connect(function (err) {
     if (err) throw err;
   });
-  console.log(`Server started: http://localhost:${PORT}/`);
+  console.log('Express server is running');
+});
+
+//Heroku Listener
+app.listen(process.env.PORT,function(){
+    console.log("Express Server is Running...");
 });
