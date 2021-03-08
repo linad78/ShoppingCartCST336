@@ -8,7 +8,6 @@ const mysql = require("mysql");
 let conn;
 
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
@@ -17,6 +16,7 @@ app.use(
     saveUnitialized: true,
   })
 );
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/", (req, res) => {
@@ -170,10 +170,10 @@ function isAuthenticated(req, res, next) {
 
 function createDBConnection() {
   var conn = mysql.createConnection({
-    host: "ko86t9azcob3a2f9.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    user: "mbd5tm743fxkugdm",
-    password: "ieax8gjoz9stp9p1",
-    database: "nhu2z4l2g3aa774f",
+    host: "eyw6324oty5fsovx.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    user: "zv9hwbdttcvzdxhe",
+    password: "wo0rlehi0pg4vecv",
+    database: "gsap0yb4s675q2ph",
   });
   return conn;
 } //create DB connection
