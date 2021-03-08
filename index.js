@@ -16,7 +16,6 @@ app.use(
     saveUnitialized: true,
   })
 );
-app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/", (req, res) => {
@@ -171,9 +170,9 @@ function isAuthenticated(req, res, next) {
 function createDBConnection() {
   var conn = mysql.createConnection({
     host: "eyw6324oty5fsovx.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    user: "zv9hwbdttcvzdxhe",
-    password: "wo0rlehi0pg4vecv",
-    database: "gsap0yb4s675q2ph",
+    user: "odszt6miubj2fiva",
+    password: "tovu0k200qwl6s1t",
+    database: "czt1hbyuvnifhe57",
   });
   return conn;
 } //create DB connection
