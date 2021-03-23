@@ -1,45 +1,43 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const session = require("express-session");
-const bcrypt = require("bcrypt");
-const mysql = require("mysql");
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const mysql = require('mysql');
 
-// global connection object so that method can share it
-let conn;
-
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: "Unicorn!",
+    secret: 'Unicorn!',
     resave: false,
     saveUnitialized: true,
   })
 );
 
 // Routes
-app.get("/", (req, res) => {
-  res.render("login");
+app.get('/', (req, res) => {
+  res.render('login');
 });
 
 // Movie store
-app.get("/displayMovie", async (req, res) => {
-  res.render("displayMovie");
+app.get('/displayMovie', async (req, res) => {
+  res.render('displayMovie');
 });
 
 // Shopping cart
-app.get("/cart", (req, res) => {
-  res.render("cart");
+app.get('/cart', (req, res) => {
+  res.render('cart');
 });
 
 // Login
-app.post("/", async (req, res) => {
+app.post('/', async (req, res) => {
   let username = req.body.username;
   let userPassword = req.body.password;
 
   let result = await checkUsername(username);
 
-  let password = "$2a$10$LH07sO0xioh7EfukesR3Yeh2a9j7VbKJijZMS6tY6QYgXXzOd58RG"; //secret hashed bycrpt password
+  let password = '$2a$10$LH07sO0xioh7EfukesR3Yeh2a9j7VbKJijZMS6tY6QYgXXzOd58RG'; //secret hashed bycrpt password
 
   let passwordMatch = await bcrypt.compare(userPassword, password);
   passwordMatch = true;
@@ -48,120 +46,131 @@ app.post("/", async (req, res) => {
   if (passwordMatch) {
     console.log(`User: ${username} logged in`);
     req.session.authenticated = true;
-    res.render("displayMovie");
+    res.render('displayMovie');
   } else {
-    res.render("login", { loginError: true });
+    res.render('login', { loginError: true });
   }
 });
 
 // Account info
-app.get("/account", isAuthenticated, (req, res) => {
+app.get('/account', isAuthenticated, (req, res) => {
   if (req.session.authenticated) {
-    res.render("account");
+    res.render('account');
   } else {
-    res.redirect("/");
+    res.redirect('/');
   }
 });
 
 // view movies
-app.get("/viewMovies", async (req, res) => {
-  // var conn = createDBConnection();
+app.get('/viewMovies', async (req, res) => {
+  var conn = createDBConnection();
 
-  let sql = "SELECT idmovie, title, producer, rating FROM movie ORDER BY title";
+  let sql = 'SELECT idmovie,title,producer FROM movie ORDER BY title';
   // let rows = await executeSQL(sql);
 
-  conn.query(sql, (err, result) => {
+  conn.connect(function (err) {
     if (err) throw err;
-    res.render("viewMovies", { movies: result });
+
+    conn.query(sql, (err, result) => {
+      if (err) throw err;
+      res.render('viewMovies', { movies: result });
+    });
   });
 });
 
 // Deletes a movie  passed a movie ID if the user is authenticated.
-app.get("/deleteMovie", isAuthenticated, (req, res) => {
-  // var conn = createDBConnection();
+app.get('/deleteMovie', isAuthenticated, (req, res) => {
+  var conn = createDBConnection();
 
-  var sql = "DELETE FROM movie where idmovie = ?";
+  var sql = 'DELETE FROM movie where idmovie = ?';
   var sqlParams = [req.query.idmovie];
 
-  conn.query(sql, sqlParams, (err, result) => {
+  conn.connect(function (err) {
     if (err) throw err;
-  });
 
-  res.send("it works!");
+    conn.query(sql, sqlParams, (err, result) => {
+      if (err) throw err;
+    });
+  });
+  res.send('movie is deleted !');
 });
 
 // Add a movie
-app.get("/addMovie", isAuthenticated, function (req, res) {
-  // var conn = createDBConnection();
+app.get('/addMovie', isAuthenticated, function (req, res) {
+  var conn = createDBConnection();
 
-  var sql = "INSERT INTO movie (title, producer, rating) values (?,?,?)";
+  var sql = 'INSERT INTO movie (title,producer,rating) values (?,?,?)';
 
-  
-  // var title = parseFloat(req.query.title);
-  // var producer = parseInt(req.query.producer);
-  // var rating = parseInt(req.query.rating);
+  var title = parseFloat(req.query.title);
+  var producer = parseInt(req.query.producer);
+  var rating = parseInt(req.query.rating);
 
-  var sqlParams = [req.query.title, req.query.producer, req.query.rating];
+  var sqlParams = [req.query.title, producer, rating];
 
-  conn.query(sql, sqlParams, function (err, result) {
+  conn.connect(function (err) {
     if (err) throw err;
-    console.log("adding movie: ", req.query.title);
-    res.send("movie added!");
+
+    conn.query(sql, sqlParams, function (err, result) {
+      if (err) throw err;
+    });
   });
+  res.send('movie is added!');
 });
 
 // Logout from session
-app.get("/logout", function (req, res) {
+app.get('/logout', function (req, res) {
   req.session.destroy();
-  res.redirect("/");
+  res.redirect('/');
 });
 
 // Get all movies
-app.get("/getAllMovies", (req, res) => {
-  // var conn = createDBConnection();
-
+app.get('/getAllMovies', (req, res) => {
+  var conn = createDBConnection();
   //var sql = "SELECT * from movie order by title"
-  var sql =
-    "SELECT title, producer, rating FROM movie JOIN movie  ORDER BY b.title";
-
-  conn.query(sql, function (err, results) {
+  var sql = 'SELECT title, producer, rating  FROM movie JOIN movie  ORDER BY b.title';
+  conn.connect(function (err) {
     if (err) throw err;
-    res.send(results);
+    conn.query(sql, function (err, results) {
+      if (err) throw err;
+      res.send(results);
+    });
   });
 });
 
 // Search movies by Title
-app.get("/getproducer", (req, res) => {
-  // var conn = createDBConnection();
-
-  var sql = "SELECT title, producer FROM movie  ORDER BY producer";
+app.get('/getproducer', (req, res) => {
+  var conn = createDBConnection();
+  var sql = 'SELECT title, producerFROM movie  ORDER BY producer';
   var sqlParams = [req.query.title];
-
-  conn.query(sql, sqlParams, function (err, results) {
+  conn.connect(function (err) {
     if (err) throw err;
-    console.log(results);
-    res.send(results);
+    conn.query(sql, sqlParams, function (err, results) {
+      if (err) throw err;
+      console.log(results);
+      res.send(results);
+    });
   });
 });
 
 // Search movie by producer
-app.get("/getrating", (req, res) => {
-  // var conn = createDBConnection();
-
-  var sql = "SELECT title, rating from movie GROUP BY idmovie ORDER BY b.title";
+app.get('/getrating', (req, res) => {
+  var conn = createDBConnection();
+  var sql = 'SELECT title, rating from movie GROUP BY idmovie ORDER BY b.title';
   var sqlParams = [req.query.title, req.query.rating];
-
-  conn.query(sql, sqlParams, function (err, results) {
+  conn.connect(function (err) {
     if (err) throw err;
-    console.log(results);
-    res.send(results);
+    conn.query(sql, sqlParams, function (err, results) {
+      if (err) throw err;
+      console.log(results);
+      res.send(results);
+    });
   });
 });
 
 // middleware function for all pages wew need it to be password protected/middleware function
 function isAuthenticated(req, res, next) {
   if (!req.session.authenticated) {
-    res.render("login");
+    res.render('login');
   } else {
     next(); //excute the code we have in the route
   }
@@ -169,10 +178,10 @@ function isAuthenticated(req, res, next) {
 
 function createDBConnection() {
   var conn = mysql.createConnection({
-    host: "eyw6324oty5fsovx.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    user: "odszt6miubj2fiva",
-    password: "tovu0k200qwl6s1t",
-    database: "czt1hbyuvnifhe57",
+    host: "xlf3ljx3beaucz9x.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    user: "ql1x71wowj14etor",
+    password: "uvtjlhdytgy67dm3",
+    database: "abxsz67grf7sjdso",
   });
   return conn;
 } //create DB connection

@@ -12,6 +12,7 @@
 <body>
     <h1>View all Movies </h1>
     <h2>Update and Delete Movies</h2>
+    <div>
     <% movies.forEach(function(movie){ %>
     [<a href="/viewMovies?idmovie=<%=movie.idmovie%>">View</a>]
     [<a href="/deleteMovie?idmovie=<%=movie.idmovie%>" id="<%=movie.idmovie%>">Delete</a>]
@@ -27,7 +28,7 @@
     </span>
     <br>
     <%})%>
-
+    </div>
     <script>
         //add an event listener to ask before delete Movie
         $(".deleteMovie").on("click", confirmDeleteMovie);
